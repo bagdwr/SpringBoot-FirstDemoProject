@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#246da6;"
+     xmlns:th="https://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <a class="navbar-brand" href="#">E-shop</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{'/'}" th:text="#{label.home}"> <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active" sec:authorize="isAuthenticated()">
+                <a class="nav-link" th:href="@{'/profile'}" th:text="${current_user.fullname}"></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{'/additem'}" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MODERATOR')"  th:text="#{label.addItem}"></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{'/about'}"  th:text="#{label.about}"></a>
+            </li>
+            <li class="nav-item active" sec:authorize="isAnonymous()">
+                <a class="nav-link" th:href="@{'/login'}"  th:text="#{label.login}"></a>
+            </li>
+            <li class="nav-item active" sec:authorize="isAnonymous()">
+                <a class="nav-link" th:href="@{'/register'}"  th:text="#{label.register}"></a>
+            </li>
+            <li class="nav-item active" sec:authorize="isAuthenticated()">
+                <a class="nav-link" href="JavaScript:void(0)" onclick="document.getElementById('logoutFormID').submit()" th:text="#{label.logout}"></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="?lng=en">ENG</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="?lng=ru">RUS</a>
+            </li>
+
+            <form th:action="@{'logout'}" method="post" id="logoutFormID" sec:authorize="isAuthenticated()">
+            </form>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" th:placeholder="#{button.search}" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" th:text="#{button.search}"></button>
+        </form>
+    </div>
+</nav>

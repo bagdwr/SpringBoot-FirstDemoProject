@@ -1,0 +1,32 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/main.html">
+<div layout:fragment="site_content">
+    <div class="row mt-5">
+        <div class="col-6 offset-3">
+            <form th:action="@{'/addItem'}" method="post">
+                <div class="form-group">
+                    <label  th:text="#{label.name}"></label>
+                    <input type="text" class="form-control" name="item_name" required>
+                </div>
+                <div class="form-group">
+                    <label  th:text="#{label.price}"></label>
+                    <input type="number" class="form-control" name="item_price" min="0" max="1000000" required>
+                </div>
+                <div class="form-group">
+                    <label  th:text="#{label.amount}"></label>
+                    <input type="number" class="form-control" name="item_amount" min="0" max="1000000" required>
+                </div>
+                <div class="form-group">
+                    <label  th:text="#{label.country}"></label>
+                    <select class="form-control" name="country_id">
+                        <option th:each="cnt:${countries}" th:text="${cnt.getName()+'/'+cnt.getCode()}" th:value="${cnt.getId()}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="form-control" style="background-color: green; color: white;"  th:text="#{button.add}"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>
