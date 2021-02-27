@@ -279,7 +279,7 @@ public class HomeController {
     )throws IOException
     {
          String pictureUrl=viewPath+defaultPicture;
-         if (url!=null){
+         if (url!=null && !url.equals("null")){
              pictureUrl=viewPath+url+".jpg";
          }
 

@@ -1,6 +1,6 @@
 <html xmlns:th="https://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/main.html">
-<div layout:fragment="site_content">
+<div layout:fragment="site_content" style="min-height: 600px;">
     <div class="row mt-5">
         <div class="col-12">
             <h1 style="text-align: center;">WELCOME <span th:text="${current_user.getFullname()}"></span></h1>
