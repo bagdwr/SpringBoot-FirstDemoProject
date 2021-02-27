@@ -6,7 +6,12 @@ import com.example.springbootdemo.entities.Users;
 import com.example.springbootdemo.entities.shopItems;
 import com.example.springbootdemo.services.ItemService;
 import com.example.springbootdemo.services.UserService;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,9 +20,16 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.http.HttpRequest;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +41,15 @@ public class HomeController {
 
     @Autowired
     private UserService userService;
+
+    @Value("${file.avatar.viewPath}")
+    private String viewPath;
+
+    @Value("${file.avatar.uploadPath}")
+    private String uploadPath;
+
+    @Value("${file.avatar.defaultPicture}")
+    private String defaultPicture;
 
     @GetMapping(value = "/")
     public String index(Model model){
@@ -228,4 +249,51 @@ public class HomeController {
         }
         return null;
     }
+
+    @PostMapping(value = "/uploadavatar")
+    @PreAuthorize("isAuthenticated()")
+    public String uploadAvatar(
+            @RequestParam(name = "user_avatar")MultipartFile file
+            ){
+        if (file.getContentType().equals("image/jpeg")|| file.getContentType().equals("image/png")){
+            try {
+                Users currentUser=getUserData();
+                String picName= DigestUtils.sha1Hex("Avatar_"+currentUser.getId()+"_!Picture");
+                byte[]bytes=file.getBytes();
+                Path path= Paths.get(uploadPath+picName+".jpg");
+                Files.write(path,bytes);
+                currentUser.setUser_avatar(picName);
+                userService.saveUser(currentUser);
+                return "redirect:/profile?success";
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        return "redirect:/";
+    }
+
+    @GetMapping(value = "/viewphoto/{url}",produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    @PreAuthorize("isAuthenticated()")
+    public @ResponseBody byte[]viewProfilePhoto(
+            @PathVariable(name = "url") String url
+    )throws IOException
+    {
+         String pictureUrl=viewPath+defaultPicture;
+         if (url!=null){
+             pictureUrl=viewPath+url+".jpg";
+         }
+
+        InputStream in;
+         try{
+             ClassPathResource pathResource=new ClassPathResource(pictureUrl);
+             in=pathResource.getInputStream();
+         }catch (Exception ex){
+             ClassPathResource pathResource=new ClassPathResource(viewPath+defaultPicture);
+             in=pathResource.getInputStream();
+             ex.printStackTrace();
+         }
+
+         return IOUtils.toByteArray(in);
+    }
+
 }

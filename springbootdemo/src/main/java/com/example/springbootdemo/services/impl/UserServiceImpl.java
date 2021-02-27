@@ -42,6 +42,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Users saveUser(Users user) {
+        return usersRepository.save(user);
+    }
+
+    @Override
     public Users createUsers(Users user) {
         Users checkUser=usersRepository.findByEmail(user.getEmail());
         if (checkUser==null){
